@@ -1,5 +1,6 @@
 package binarygeek.dhadhabyshamim.Activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -11,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
@@ -20,13 +20,15 @@ import binarygeek.dhadhabyshamim.Adapter.EpisodeAdapter;
 import binarygeek.dhadhabyshamim.Model.Episode;
 import binarygeek.dhadhabyshamim.NetworkCaller.FirebaseCaller;
 import binarygeek.dhadhabyshamim.R;
+import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener , WaveSwipeRefreshLayout.OnRefreshListener {
 
     public LinearLayoutManager linearLayoutManager;
     public static ArrayList<Episode> GlodbalDataStorageForEpisode=new ArrayList<>();
     public FirebaseCaller firebaseCaller;
     public RecyclerView recyclerView;
+    WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
 
 
     @Override
@@ -34,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         CreateUI();
-
     }
 
     @Override
@@ -46,13 +47,75 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    public void onRefresh() {
+
+        CreateOrRefreshEpisodeList ();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mWaveSwipeRefreshLayout.setRefreshing(false);
+            }
+        }, 3000);
+
     }
 
+
+    public void workOfDrawer(Toolbar toolbar){
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        CreateOrRefreshEpisodeList ();
+    }
+    public void CreateUI(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler);
+
+        mWaveSwipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.main_swipe);
+        mWaveSwipeRefreshLayout.setColorSchemeColors(Color.WHITE, Color.WHITE);
+        mWaveSwipeRefreshLayout.setOnRefreshListener(this);
+        mWaveSwipeRefreshLayout.setWaveColor(Color.argb(100,255,0,0));
+
+        workOfDrawer( toolbar);
+    }
+    public void CreateOrRefreshEpisodeList (){
+
+
+        final  EpisodeAdapter episodeAdapter =new EpisodeAdapter(this);
+        firebaseCaller=new FirebaseCaller();
+
+        firebaseCaller.getTotalEpisodes();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("GK","GlodbalDataStorageForEpisode size "+GlodbalDataStorageForEpisode.size());
+
+                if(GlodbalDataStorageForEpisode.size()==0){
+                    CreateOrRefreshEpisodeList();
+                }
+
+                episodeAdapter.addAll(GlodbalDataStorageForEpisode);
+                linearLayoutManager = new LinearLayoutManager(MainActivity.this);
+                recyclerView.setAdapter(episodeAdapter);
+                recyclerView.setLayoutManager(linearLayoutManager);
+            }
+        }, 500);
+
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -79,45 +142,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void workOfDrawer(Toolbar toolbar){
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-
-        final  EpisodeAdapter episodeAdapter =new EpisodeAdapter(this);
-
-        firebaseCaller=new FirebaseCaller();
-        firebaseCaller.getTotalEpisodes();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("GK","GlodbalDataStorageForEpisode size "+GlodbalDataStorageForEpisode.size());
-                episodeAdapter.addAll(GlodbalDataStorageForEpisode);
-                linearLayoutManager = new LinearLayoutManager(MainActivity.this);
-                recyclerView.setAdapter(episodeAdapter);
-                recyclerView.setLayoutManager(linearLayoutManager);
-            }
-        }, 1000);
-
-
-    }
-    public void CreateUI(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        recyclerView = (RecyclerView) findViewById(R.id.recycler);
-        workOfDrawer( toolbar);
-    }
 }
