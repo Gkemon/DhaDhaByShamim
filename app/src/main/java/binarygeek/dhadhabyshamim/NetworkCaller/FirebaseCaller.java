@@ -24,6 +24,7 @@ public class FirebaseCaller {
     public static boolean calledAlready = false;
 
     public FirebaseCaller(){
+
         initializationFirebase();
     }
 
@@ -37,6 +38,26 @@ public class FirebaseCaller {
         }
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
+
+//        ArrayList<Episode> episodeArrayList = new ArrayList<>();
+//        Episode episode = new Episode();
+//        episode.setEpisodeName("EMON");
+//        ArrayList<DhaDha> dhaDhaArrayList = new ArrayList<>();
+//        DhaDha dhaDha = new DhaDha();
+//        dhaDha.setDhadha("dhadha ");
+//        dhaDha.setAnswer("pada");
+//
+//        dhaDhaArrayList.add(dhaDha);
+//        dhaDhaArrayList.add(dhaDha);
+//        dhaDhaArrayList.add(dhaDha);
+//        dhaDhaArrayList.add(dhaDha);
+//
+//        episode.setDhaDhas(dhaDhaArrayList);
+//        episodeArrayList.add(episode);
+//        episodeArrayList.add(episode);
+//        episodeArrayList.add(episode);
+//        databaseReference.child("DhaDhaByEpisode").setValue(episodeArrayList);
+//
 
     }
 
@@ -53,7 +74,7 @@ public class FirebaseCaller {
                     EpisodeItemsList.add(episode);
                     if(episode!=null){
                         episode.dhaDhas.size();
-                        Log.d("GK",episode.dhaDhas.size()+" the size of dhaha");
+                        Log.d("GK",episode.dhaDhas.size()+" the size of dhaha "+episode.dhaDhas.get(0));
                     }
                     else {
                         Log.d("GK","null the size of dhaha");

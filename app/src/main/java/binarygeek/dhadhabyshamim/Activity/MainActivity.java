@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         CreateUI();
+
     }
 
     @Override
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void CreateOrRefreshEpisodeList (){
 
 
-        final  EpisodeAdapter episodeAdapter =new EpisodeAdapter(this);
+        final EpisodeAdapter episodeAdapter =new EpisodeAdapter(this);
         firebaseCaller=new FirebaseCaller();
 
         firebaseCaller.getTotalEpisodes();
@@ -107,13 +108,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if(GlodbalDataStorageForEpisode.size()==0){
                     CreateOrRefreshEpisodeList();
                 }
+                else {
 
-                episodeAdapter.addAll(GlodbalDataStorageForEpisode);
-                linearLayoutManager = new LinearLayoutManager(MainActivity.this);
-                recyclerView.setAdapter(episodeAdapter);
-                recyclerView.setLayoutManager(linearLayoutManager);
+                    episodeAdapter.addAll(GlodbalDataStorageForEpisode);
+                    linearLayoutManager = new LinearLayoutManager(MainActivity.this);
+                    recyclerView.setAdapter(episodeAdapter);
+                    recyclerView.setLayoutManager(linearLayoutManager);
+                }
+
             }
-        }, 500);
+        }, 100);
 
     }
 
