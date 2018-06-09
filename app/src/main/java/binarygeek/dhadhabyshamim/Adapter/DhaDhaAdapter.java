@@ -1,18 +1,20 @@
 package binarygeek.dhadhabyshamim.Adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import binarygeek.dhadhabyshamim.HelperClasses.RecyclerItemClickListener;
-import binarygeek.dhadhabyshamim.HelperClasses.SecretTextView;
 import binarygeek.dhadhabyshamim.Model.DhaDha;
 import binarygeek.dhadhabyshamim.R;
 
@@ -82,27 +84,80 @@ public class DhaDhaAdapter extends RecyclerView.Adapter<DhadhaItemsViewHolder> {
     @Override
     public void onBindViewHolder(final DhadhaItemsViewHolder holder, int position) {
 
-holder.dhadha.setText(dhadhaArrayList.get(position).dhadha);
+        String dhadha=dhadhaArrayList.get(position).dhadha;
+        String answer=dhadhaArrayList.get(position).answer;
 
-holder.answar.setText(dhadhaArrayList.get(position).answer);
+        holder.dhadha.setText(dhadha);
+
+        String BANGLA_FONT_SOLEMAN_LIPI="BenSenHandwriting.ttf";
+        Typeface tf = Typeface.createFromAsset(context.getAssets(),
+                BANGLA_FONT_SOLEMAN_LIPI);
+        holder.answar.setTypeface(tf);
+        holder.answar.setText(answer);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+
+//                    String BANGLA_FONT_SOLEMAN_LIPI="/BenSenHandwriting.ttf";
+//                    Typeface tf = Typeface.createFromAsset(context.getAssets(),
+//                    BANGLA_FONT_SOLEMAN_LIPI);
+//                    holder.answar.setTypeface(tf);
+//                    holder.answar.setText(answer);
+
+           // holder.answar.setText(Html.fromHtml(answer, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+           // holder.answar.setText(Html.fromHtml(answer));
+        }
 
 
 holder.answarButton.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View v) {
 
+       final AlphaAnimation alphaAnimationHideToShow,alphaAnimationShowToHide;
+
+        alphaAnimationHideToShow = new AlphaAnimation(0.0f, 1.0f);
+        alphaAnimationShowToHide = new AlphaAnimation(1.0f,0.0f);
+
+        alphaAnimationHideToShow.setDuration(1000);
+        alphaAnimationShowToHide.setDuration(1000);
+
         if(holder.answarButton.getText().equals("উত্তর দেখুন")){
             holder.answarButton.setText("উত্তর লুকান");
-            holder.answar.setDuration(3000);
             holder.answar.setVisibility(View.VISIBLE);
-            holder.answar.show();
+
+            holder.answar.setAnimation(alphaAnimationHideToShow);
+            holder.answar.startAnimation(alphaAnimationHideToShow);
+
         }
         else{
             holder.answarButton.setText("উত্তর দেখুন");
-            holder.answar.setDuration(3000);
-            holder.answar.hide();
-            holder.answar.setVisibility(View.GONE);
+
+            holder.answar.setAnimation(alphaAnimationShowToHide);
+
+            holder.answar.startAnimation(alphaAnimationShowToHide);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    holder.answar.setVisibility(View.GONE);
+                }
+            }, 1000);
         }
+
+//
+//        if(holder.answarButton.getText().equals("উত্তর দেখুন")){
+//            holder.answarButton.setText("উত্তর লুকান");
+//            holder.answar.setDuration(3000);
+//            holder.answar.setVisibility(View.VISIBLE);
+//            holder.answar.show();
+//        }
+//        else{
+//            holder.answarButton.setText("উত্তর দেখুন");
+//            holder.answar.setDuration(3000);
+//            holder.answar.hide();
+//            holder.answar.setVisibility(View.GONE);
+//        }
 
 
 
@@ -121,12 +176,12 @@ class DhadhaItemsViewHolder extends RecyclerView.ViewHolder {
 
    public TextView dhadha;
    public Button answarButton;
-   public SecretTextView answar;
+   public TextView answar;
 
    public DhadhaItemsViewHolder(View v) {
        super(v);
        dhadha = (TextView) v.findViewById(R.id.dhadha_name);
        answarButton = (Button) v.findViewById(R.id.anwer_button) ;
-       answar = (SecretTextView) v.findViewById(R.id.answer);
+       answar = (TextView) v.findViewById(R.id.answer);
    }
 }
