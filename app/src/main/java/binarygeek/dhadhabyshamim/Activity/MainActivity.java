@@ -111,9 +111,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else {
 
                     episodeAdapter.addAll(GlodbalDataStorageForEpisode);
+                    episodeAdapter.notifyDataSetChanged();
                     linearLayoutManager = new LinearLayoutManager(MainActivity.this);
-                    recyclerView.setAdapter(episodeAdapter);
                     recyclerView.setLayoutManager(linearLayoutManager);
+                    recyclerView.setAdapter(episodeAdapter);
+
                 }
 
             }

@@ -36,8 +36,10 @@ public class FirebaseCaller {
             databaseReference = firebaseDatabase.getReference();
             calledAlready = true;
         }
+
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
+        databaseReference.keepSynced(true);
 
 //        ArrayList<Episode> episodeArrayList = new ArrayList<>();
 //        Episode episode = new Episode();
@@ -62,7 +64,7 @@ public class FirebaseCaller {
     }
 
     public  void getTotalEpisodes() {
-
+        databaseReference.child("DhaDhaByEpisode").keepSynced(true);
         databaseReference.child("DhaDhaByEpisode").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
